@@ -1,0 +1,9 @@
+rootProject.name = 'bookstore-boot'
+include 'microboot-common'
+include 'microboot-jwt'
+include 'bookstore-web'
+include 'bookstore-service'
+include 'bookstore-model'
+include 'bookstore-mapper'
+include 'bookstore-test'
+
