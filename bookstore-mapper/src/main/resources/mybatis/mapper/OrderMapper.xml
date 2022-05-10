@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.mxzero.mapper.OrderMapper">
+    <resultMap id="orderDetail" type="Order">
+        <id column="order_id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="state" property="state"/>
+        <result column="pay_type" property="payType"/>
+        <result column="price" property="price"/>
+        <result column="number" property="number"/>
+        <result column="user_id" property="userId"/>
+        <result column="description" property="description"/>
+        <association property="book" javaType="Book">
+            <id column="book_id" property="id" />
+            <result column="book_title" property="title"/>
+            <result column="book_isbn" property="isbn"/>
+            <result column="book_picture" property="picture"/>
+            <result column="book_price" property="price"/>
+        </association>
+        <association property="address" javaType="Address">
+            <result column="province" property="province" />
+            <result column="city" property="city" />
+            <result column="district" property="district" />
+            <result column="detail" property="detail" />
+            <result column="signer_name" property="signerName" />
+            <result column="signer_mobile" property="signerMobile" />
+        </association>
+
+    </resultMap>
+
+    <select id="findById" resultMap="orderDetail">
+        select o.id  order_id,o.create_time,o.state,o.pay_type,o.price,o.number,
+               o.book_id,o.book_title,o.book_isbn,o.book_picture,o.book_price,
+               o.province,o.city,o.district,o.detail,o.signer_name,o.signer_mobile,
+               o.user_id,o.description
+        from t_order o
+        where o.id = #{id};
+    </select>
+
+    <select id="findAll" resultMap="orderDetail">
+        select * from t_order
+        <if test="current != null">
+            limit #{current},{size}
+        </if>
+    </select>
+
+    <select id="findAllByUserId" resultMap="orderDetail">
+        select o.id  order_id,o.create_time,o.state,o.pay_type,o.price,o.number,o.description,
+               o.book_title title,o.book_isbn isbn,o.book_picture picture,
+               o.province, o.city,o.district,o.detail,o.signer_name,o.signer_mobile
+        from t_order o
+        where o.user_id = #{userId}
+    </select>
+
+    <insert id="doCreate" parameterType="Order" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into t_order(user_id, book_id, book_title, book_isbn, book_price, book_picture,
+                            number, price, pay_type, state,
+                            province, city, district, detail, signer_name, signer_mobile, description,
+                            create_time)
+        values (#{userId}, #{book.id}, #{book.title}, #{book.isbn}, #{book.price}, #{book.picture}
+                ,#{number}, #{price}, #{payType},#{state}
+                ,#{address.province},#{address.city},#{address.district},#{address.detail},#{address.signerName},#{address.signerMobile},#{description},
+                now()
+                )
+    </insert>
+
+    <delete id="doRemove" parameterType="int">
+        delete from t_order where id =#{id}
+    </delete>
+
+    <update id="doUpdateState">
+        update t_order set state = #{state}, update_time = now() where id = #{id}
+    </update>
+</mapper>

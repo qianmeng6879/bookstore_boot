@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.mxzero.mapper.UserMapper">
+    <select id="findById" resultType="User">
+        select id,username, nickname, password, mobile,email,sex, picture,create_time,update_time
+        from t_user
+        where id = #{id}
+    </select>
+
+    <select id="findAll" resultType="User">
+        select id, username,nickname,email,mobile,sex,create_time,update_time,update_time from t_user
+        <if test="keyword">
+            where ${column} like concat(#{keyword},'%')
+        </if>
+
+        <choose>
+            <when test="current != null and size !=null">
+                limit #{current}, #{size}
+            </when>
+            <when test="size != null">
+                limit #{size}
+            </when>
+        </choose>
+    </select>
+
+    <select id="findOne" resultType="User">
+        select id,
+               username,
+               nickname,
+               email,
+               mobile,
+               sex,
+               picture,
+               create_time,
+               update_time
+        from t_user
+        where ${column} = #{keyword}
+    </select>
+
+    <select id="findInfoAndPasswordByUsername" resultType="User">
+        select id, username, password, nickname from t_user where username = #{username}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(*)
+        from t_user
+    </select>
+
+    <insert id="doCreate" parameterType="User" keyProperty="id" keyColumn="id" useGeneratedKeys="true">
+        insert into t_user(username, password, email, mobile, picture, sex, create_time, nickname)
+        values (#{username}, #{password}, #{email}, #{mobile}, #{picture}, #{sex}, now(), #{username})
+    </insert>
+
+    <delete id="doRemove" parameterType="long">
+        delete
+        from t_user
+        where id = #{id}
+    </delete>
+
+    <update id="doUpdate" parameterType="User">
+        update t_user set
+        update_time = now()
+        <if test="username != null">
+            ,username = #{username}
+        </if>
+        <if test="password != null">
+            ,password = #{password}
+        </if>
+        <if test="email != null">
+            ,email = #{email}
+        </if>
+        <if test="mobile != null">
+            ,mobile = #{mobile}
+        </if>
+        <if test="picture != null">
+            ,picture = #{picture}
+        </if>
+        <if test="sex != null">
+            ,sex = #{sex}
+        </if>
+        <if test="nickname != null">
+            ,nickname = #{nickname}
+        </if>
+        where id = #{id}
+    </update>
+</mapper>

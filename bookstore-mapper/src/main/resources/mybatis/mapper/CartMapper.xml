@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.mxzero.mapper.CartMapper">
+    <resultMap id="CartMap" type="Cart">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="count" property="count" />
+        <result column="create_time" property="createTime" />
+        <association property="book" javaType="Book">
+            <id column="book_id" property="id" />
+            <result column="title" property="title" />
+            <result column="isbn" property="isbn" />
+            <result column="picture" property="picture" />
+            <result column="price" property="price" />
+        </association>
+    </resultMap>
+
+    <select id="findAllByUserId" resultMap="CartMap">
+        select
+               s.id, s.count,s.create_time,
+               b.id book_id, b.title, b.isbn, b.price, b.picture,
+               u.id user_id, u.username
+        from
+            t_cart s left join t_book b on s.book_id = b.id
+            left join t_user u on u.id = s.user_id
+        where u.id = #{userId}
+    </select>
+
+    <insert id="doCreate" parameterType="Cart" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into t_cart(book_id, user_id, count, create_time) VALUES
+    (#{bookId},#{userId},#{count},now())
+    </insert>
+
+    <delete id="doRemoveById" parameterType="long">
+        delete from t_cart where id = #{id} and user_id = #{userId}
+    </delete>
+
+    <select id="getCount" resultType="int">
+        select count(*) from t_cart where user_id = #{userId} and book_id = #{bookId}
+    </select>
+</mapper>

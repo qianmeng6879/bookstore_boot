@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.mxzero.mapper.BookMapper">
+    <select id="findById" resultType="Book">
+        select id,
+               title,
+               isbn,
+               price,
+               picture,
+               author,
+               publisher,
+               publish_date,
+               description,
+               category_id
+        from t_book
+        where id = #{id}
+    </select>
+
+    <select id="findAll" resultType="Book">
+        select id, title, isbn, price, picture, author, publisher, publish_date, description, category_id from t_book
+        <if test="keyword != null">
+            where ${column} like concat(#{keyword},'%')
+        </if>
+        <if test="current != null">
+            limit #{current}, #{size}
+        </if>
+    </select>
+
+    <select id="findAllByCategory" resultType="Book">
+        select id, title, isbn, price, picture, author, publisher, publish_date, description, category_id from t_book
+        <where>
+            <trim suffixOverrides="and">
+                <if test="categoryId != null">
+                    category_id = #{categoryId}
+                </if>
+                <if test="keyword != null">
+                    and ${column} like concat(#{keyword},'%')
+                </if>
+            </trim>
+        </where>
+        <choose>
+            <when test="current != null and size != null">
+                limit #{current}, #{size}
+            </when>
+            <when test="size != null">
+                limit #{size}
+            </when>
+        </choose>
+
+    </select>
+
+    <select id="findOne" resultType="Book">
+        select id,
+               title,
+               isbn,
+               price,
+               picture,
+               author,
+               publisher,
+               publish_date,
+               description,
+               category_id
+        from t_book
+        where ${column} = #{keyword}
+    </select>
+
+    <select id="getCount" resultType="int">
+        select count(*)
+        from t_book
+        <if test="column != null">
+            where ${column} like concat(#{value}, '%')
+        </if>
+    </select>
+    <select id="getCountByCategory" resultType="int">
+        select count(*) from t_book
+        <where>
+            <trim suffixOverrides="and">
+                <if test="categoryId != null">
+                    category_id = #{categoryId}
+                </if>
+                <if test="keyword != null">
+                    and ${column} like concat(#{keyword},'%')
+                </if>
+            </trim>
+        </where>
+    </select>
+
+    <insert id="doCreate" parameterType="Book" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into t_book(title, isbn, picture, author, publisher, publish_date, description, category_id, create_time)
+        VALUES (#{title}, #{isbn}, #{picture}, #{author}, #{publisher}, #{publishDate}, #{description}, #{categoryId},
+                now())
+    </insert>
+
+    <delete id="doRemove" parameterType="long">
+        delete
+        from t_book
+        where id = #{id}
+    </delete>
+
+    <update id="doUpdate" parameterType="Book">
+        update t_book set update_time = now()
+        <if test="title != null">
+            title = #{title}
+        </if>
+        <if test="isbn != null">
+            isbn = #{isbn}
+        </if>
+        <if test="picture != null">
+            picture = #{picture}
+        </if>
+        <if test="author != null">
+            author = #{author}
+        </if>
+        <if test="publisher != null">
+            publisher = #{publisher}
+        </if>
+        <if test="publish_date != null">
+            publish_date = #{publish_date}
+        </if>
+        <if test="description != null">
+            description = #{description}
+        </if>
+        <if test="category_id != null">
+            category_id = #{category_id}
+        </if>
+        where id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.mxzero.mapper.AddressMapper">
+    <select id="findById" resultType="Address">
+        select id, user_id, province, city, district, detail, signer_name, signer_mobile, create_time, update_time from t_address where id = #{id}
+    </select>
+
+    <select id="findAll" resultType="Address">
+        select id,user_id,province,city,district,detail,signer_name,signer_mobile, create_time,update_time
+        from t_address
+        <if test="keyword != null">
+            where ${column} = #{keyword}
+        </if>
+        <if test="current != null">
+            limit #{current},#{size}
+        </if>
+    </select>
+    <select id="findOne" resultType="Address">
+        select id,
+               user_id,
+               province,
+               city,
+               district,
+               detail,
+               signer_name,
+               signer_mobile,
+               create_time,
+               update_time
+        from t_address
+        where ${column} = #{keyword}
+    </select>
+    <select id="getCount" resultType="int">
+        select count(*)
+        from t_address
+    </select>
+
+    <insert id="doCreate" parameterType="Address" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into t_address(user_id, province, city, district, detail, signer_name, signer_mobile, create_time)
+        values (#{userId}, #{province}, #{city}, #{district}, #{detail}, #{signerName}, #{signerMobile}, now())
+    </insert>
+
+    <delete id="doRemove" parameterType="long">
+        delete
+        from t_address
+        where id = #{id}
+    </delete>
+
+    <update id="doUpdate" parameterType="Address">
+        update t_address
+        set update_time = now()
+        <if test="province != null">
+            province = #{province}
+        </if>
+        <if test="city != null">
+            city = #{city}
+        </if>
+        <if test="detail != null">
+            detail = #{detail}
+        </if>
+        <if test="signer_name != null">
+            signer_name = #{signerName}
+        </if>
+        <if test="signer_mobile != null">
+            signer_mobile = #{signerMobile}
+        </if>
+        where id = #{id}
+    </update>
+
+
+</mapper>

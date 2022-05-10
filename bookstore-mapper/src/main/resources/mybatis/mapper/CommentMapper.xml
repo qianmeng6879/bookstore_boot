@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="top.mxzero.mapper.CommentMapper">
+    <resultMap id="commentData" type="Comment">
+        <id column="id" property="id" />
+        <result column="content" property="content" />
+        <result column="score" property="score" />
+        <result column="create_time" property="createTime" />
+        <result column="book_id" property="bookId" />
+        <result column="user_id" property="userId" />
+        <result column="order_id" property="orderId" />
+        <association property="user" javaType="User">
+            <id column="user_id" property="id" />
+            <result column="username" property="username" />
+        </association>
+    </resultMap>
+
+    <select id="findAllByBookId" resultMap="commentData">
+        select c.id, c.content, c.score, c.create_time, c.book_id,c.user_id, c.order_id ,
+               u.username, u.picture from t_comment c left join t_user u on c.user_id = u.id
+            where c.book_id = #{bookId}
+    </select>
+
+    <insert id="doCreate" parameterType="Comment" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into t_comment(content,score,user_id,book_id,order_id,create_time)
+         values
+        (#{content},#{score}, #{user_id}, #{book_id}, #{order_id}, now())
+    </insert>
+
+    <delete id="doRemove" parameterType="long">
+        delete from t_comment where id = #{id}
+        <if test="user_id != null">
+            and user_id = #{user_id}
+        </if>
+    </delete>
+</mapper>
